@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">NewsApp</string>
+    <string name="profile_name">Jeremia S.P. Sibarani</string>
+    <string name="profile_email">sibaranigreamjeremia@gmail.com</string>
+    <string name="profile_description">My current passion lies in software development, with a particular focus on mobile apps. As of now, I am engaged in experimenting with Android development to enhance my skills and knowledge in this field.</string>
+    <string name="profile_title">Profile</string>
+    <string name="placeholder_search_bar_text">Search news here</string>
+    <string name="menu_home">Home</string>
+    <string name="menu_bookmark">Bookmark</string>
+    <string name="menu_profile">Profile</string>
+</resources>
