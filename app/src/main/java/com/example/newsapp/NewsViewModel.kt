@@ -12,9 +12,19 @@ class NewsViewModel(
     private val newsRepository: NewsRepository
 ) : ViewModel() {
 
-//    private val _uiState : MutableStateFlow<UiState<SearchNewsResponse>> = MutableStateFlow(UiState.Loading)
-//    val uiState : StateFlow<UiState<SearchNewsResponse>> get() = _uiState
+    init{
+        getNews()
+    }
 
-    fun getNews(keyword : String = "Apple") = newsRepository.getNews(keyword)
+    private val _uiState : MutableStateFlow<UiState<SearchNewsResponse>> = MutableStateFlow(UiState.Loading)
+    val uiState : StateFlow<UiState<SearchNewsResponse>> get() = _uiState
+
+    fun getNews(keyword : String = "Apple") {
+        viewModelScope.launch {
+            newsRepository.getNews(keyword).collect { result ->
+                _uiState.value = result
+            }
+        }
+    }
 
 }

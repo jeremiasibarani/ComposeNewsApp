@@ -55,15 +55,6 @@ fun NewsApp() {
 
     NewsAppTheme {
         Scaffold(
-            topBar = {
-                SearchBar(
-                    placeHolderText = "Search news",
-                    iconLeading = R.drawable.search_icon,
-                    onSearchClicked = {query ->
-                        Toast.makeText(context, query, Toast.LENGTH_SHORT).show()
-                    }
-                )
-            },
             bottomBar = {
                 BottomBar(
                     navController = navController
