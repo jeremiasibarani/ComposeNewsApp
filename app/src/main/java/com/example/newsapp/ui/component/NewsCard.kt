@@ -19,13 +19,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.newsapp.R
+import com.example.newsapp.model.database.NewsEntity
 import com.example.newsapp.model.network.News
 import com.example.newsapp.ui.theme.NewsAppTheme
 
 @Composable
 fun NewsCard(
     modifier : Modifier = Modifier,
-    news : News
+    news : NewsEntity
 ){
     Card(
         modifier = modifier
@@ -112,7 +113,7 @@ fun NewsCardPreview() {
             .fillMaxSize()
             .padding(horizontal = 10.dp)) {
             NewsCard(
-                news = News(
+                news = NewsEntity(
                     country = "Europe",
                     title = "Russian warship: Moskva sinks in Black Sea",
                     source = "BBC News",

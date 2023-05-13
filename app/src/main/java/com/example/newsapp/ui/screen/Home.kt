@@ -1,6 +1,7 @@
 package com.example.newsapp.ui.screen
 
 import android.widget.Toast
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -17,9 +18,13 @@ import com.example.newsapp.NewsViewModel
 import com.example.newsapp.model.network.News
 import com.example.newsapp.ui.component.NewsCard
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemsIndexed
 import com.example.newsapp.R
 import com.example.newsapp.ViewModelFactory
 import com.example.newsapp.di.Injector
+import com.example.newsapp.model.database.NewsEntity
 import com.example.newsapp.ui.common.UiState
 import com.example.newsapp.ui.component.SearchBar
 import com.example.newsapp.ui.theme.NewsAppTheme
@@ -28,8 +33,9 @@ import com.example.newsapp.ui.theme.NewsAppTheme
 fun HomeScreen(
     modifier: Modifier = Modifier,
     viewModel : NewsViewModel = viewModel(
-        factory = ViewModelFactory.getInstance(Injector.provideNewsRepository())
-    )
+        factory = ViewModelFactory.getInstance(Injector.provideNewsRepository(LocalContext.current))
+    ),
+    navigateToDetailScreen : (newsId : Long) -> Unit
 ){
     val context = LocalContext.current
     //Todo(handle loading and error state of the call)
@@ -44,32 +50,39 @@ fun HomeScreen(
             }
         )
 
-        viewModel.uiState.collectAsState(initial = UiState.Loading).value.let{uiState ->
-            when(uiState){
-                is UiState.Loading -> {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f)
-                    ){
-                        CircularProgressIndicator(
-                            modifier = Modifier
-                                .align(Alignment.Center)
-                        )
-                    }
+        val news = viewModel.getNews().collectAsLazyPagingItems()
+        NewsList(
+            modifier = modifier,
+            data = news,
+            navigateToDetailScreen = navigateToDetailScreen
+        )
 
-                }
-                is UiState.Error -> {
-                    Toast.makeText(context, uiState.errorMessage, Toast.LENGTH_SHORT).show()
-                }
-                is UiState.Success -> {
-                    NewsList(
-                        modifier = modifier,
-                        data = uiState.data.articles
-                    )
-                }
-            }
-        }
+//        viewModel.uiState.collectAsState(initial = UiState.Loading).value.let{uiState ->
+//            when(uiState){
+//                is UiState.Loading -> {
+//                    Box(
+//                        modifier = Modifier
+//                            .fillMaxWidth()
+//                            .weight(1f)
+//                    ){
+//                        CircularProgressIndicator(
+//                            modifier = Modifier
+//                                .align(Alignment.Center)
+//                        )
+//                    }
+//
+//                }
+//                is UiState.Error -> {
+//                    Toast.makeText(context, uiState.errorMessage, Toast.LENGTH_SHORT).show()
+//                }
+//                is UiState.Success -> {
+//                    NewsList(
+//                        modifier = modifier,
+//                        data = news
+//                    )
+//                }
+//            }
+//        }
     }
 
 }
@@ -77,18 +90,24 @@ fun HomeScreen(
 @Composable
 fun NewsList(
     modifier: Modifier = Modifier,
-    data : List<News>
+    data : LazyPagingItems<NewsEntity>,
+    navigateToDetailScreen : (newsId : Long) -> Unit
 ) {
     LazyColumn(
         contentPadding = PaddingValues(10.dp),
         modifier = modifier
     ){
-        items(data){news ->
-            NewsCard(
-                modifier = Modifier
-                    .padding(10.dp),
-                news = news
-            )
+        itemsIndexed(data){_, news ->
+            news?.let{
+                NewsCard(
+                    modifier = Modifier
+                        .padding(10.dp)
+                        .clickable {
+                           navigateToDetailScreen(news.id)
+                        },
+                    news = it
+                )
+            }
         }
     }
 }

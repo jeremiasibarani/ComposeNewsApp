@@ -18,6 +18,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.newsapp.R
+import com.example.newsapp.model.database.BookmarkNewsEntity
+import com.example.newsapp.model.database.NewsEntity
 import com.example.newsapp.model.network.News
 import com.example.newsapp.ui.theme.NewsAppTheme
 
@@ -25,7 +27,7 @@ import com.example.newsapp.ui.theme.NewsAppTheme
 fun BookmarkNews(
     modifier : Modifier = Modifier,
     //Todo(decide whether or not to separate the type of this class, because this class will be the one retrieved from database and currently it's using the one from response)
-    news : News
+    news : BookmarkNewsEntity
 ) {
     Card(
         modifier = modifier
@@ -117,7 +119,7 @@ fun BookmarkNews(
 fun BookmarkNewsPrev() {
     NewsAppTheme{
         BookmarkNews(
-            news = News(
+            news = BookmarkNewsEntity(
                 country = "Europe",
                 title = "Russian warship: Moskva sinks in Black Sea",
                 source = "BBC News",

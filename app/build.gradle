@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
+    id 'kotlin-kapt'
 }
 
 android {
@@ -18,8 +19,8 @@ android {
         vectorDrawables {
             useSupportLibrary true
         }
-        buildConfigField("String", "API_KEY", "\"gs0rl3ojrBLhwojW7-fnqT55WsynCl69chXkuTOKgtk\"")
-        buildConfigField("String", "BASE_API", "\"https://api.newscatcherapi.com/v2/\"")
+        buildConfigField("String", "API_KEY", "\"88f74140477248edb5c775fbdc57c8df\"")
+        buildConfigField("String", "BASE_API", "\"https://newsapi.org/v2/\"")
     }
 
     buildTypes {
@@ -77,4 +78,21 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-viewmodel-compose:2.5.1"
     implementation "androidx.lifecycle:lifecycle-viewmodel-compose:2.5.1"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.5.1"
+
+    // Pagination
+    implementation "androidx.paging:paging-runtime-ktx:3.1.1"
+
+    // Room pagination
+    implementation 'androidx.room:room-paging:2.5.1'
+
+    // Compose Pagination
+    implementation "androidx.paging:paging-compose:1.0.0-alpha17"
+
+    // Room database
+    def room_version = "2.5.1"
+
+    implementation "androidx.room:room-ktx:$room_version"
+    kapt "androidx.room:room-compiler:$room_version"
+
+    implementation "androidx.lifecycle:lifecycle-runtime-compose:2.6.0"
 }

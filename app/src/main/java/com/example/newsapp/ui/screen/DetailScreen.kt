@@ -1,5 +1,8 @@
 package com.example.newsapp.ui.screen
 
+import android.util.Log
+import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -9,44 +12,75 @@ import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
+import com.example.newsapp.NewsDetailViewModel
 import com.example.newsapp.model.network.News
 import com.example.newsapp.R
 import com.example.newsapp.ui.theme.NewsAppTheme
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.newsapp.ViewModelFactory
+import com.example.newsapp.di.Injector
+import com.example.newsapp.model.database.NewsEntity
 
 @Composable
 fun DetailScreen(
-    modifier : Modifier = Modifier
+    modifier : Modifier = Modifier,
+    newsId : Long,
+    viewModel : NewsDetailViewModel = viewModel(
+        factory = ViewModelFactory.getInstance(Injector.provideNewsRepository(LocalContext.current))
+    ),
+    onBackPressed : () -> Unit
 ) {
+
+    val detailNews by viewModel.getDetailNewsById(newsId).collectAsStateWithLifecycle(initialValue = NewsEntity())
+
+    val context = LocalContext.current
+
+    Log.i("DETAILSCREEN-TAG", "$detailNews")
+
     Column(
         modifier = modifier
     ) {
         DetailNews(
             modifier = Modifier
                 .weight(1f),
-            news = news
+            news = detailNews,
+            onBookmarkClicked = {news ->
+                viewModel.bookmarkNews(news)
+                Toast.makeText(context, "Bookmarked", Toast.LENGTH_SHORT).show()
+            }
         )
         BottomBarAction(
             modifier = Modifier
                 .wrapContentHeight()
         )
+        BackHandler(
+            enabled = true,
+            onBack = onBackPressed
+        )
     }
 }
 
+
+// Todo(resolve this erro : Parameter specified as non-null is null: method com.example.newsapp.ui.screen.DetailScreenKt.DetailNews, parameter news)
 @Composable
 fun DetailNews(
     modifier: Modifier = Modifier,
-    news : News
+    news : NewsEntity,
+    onBookmarkClicked : (news : NewsEntity) -> Unit
 ) {
     Column(
         modifier = modifier
@@ -87,6 +121,9 @@ fun DetailNews(
                 contentDescription = null,
                 modifier = Modifier
                     .size(24.dp)
+                    .clickable {
+                        onBookmarkClicked(news)
+                    }
             )
         }
 
@@ -112,7 +149,7 @@ fun DetailNews(
         )
 
         Text(
-            text = news.excerpt,
+            text = news.description,
             style = MaterialTheme.typography.h5.copy(
                 fontSize = 24.sp
             ),
@@ -124,7 +161,7 @@ fun DetailNews(
         )
 
         Text(
-            text = news.summary,
+            text = news.content,
             style = MaterialTheme.typography.h6.copy(
                 fontSize = 15.sp
             ),
@@ -174,20 +211,10 @@ fun BottomBarAction(
 @Composable
 fun DetailScreenPrev() {
     NewsAppTheme {
-        DetailScreen(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(15.dp)
-        )
+//        DetailScreen(
+//            modifier = Modifier
+//                .fillMaxSize()
+//                .padding(15.dp)
+//        )
     }
 }
-
-private val news = News(
-    source = "BBC News",
-    publishedDate = "4 days ago",
-    country = "Europe",
-    excerpt = "Ukraine's President Zelensky to BBC: Blood money being paid for Russian oil",
-    summary = "Ukrainian President Volodymyr Zelensky has accused European countries that continue to buy Russian oil of \"earning their money in other people's blood\".\n" +
-            "\n" +
-            "In an interview with the BBC, President Zelensky singled out Germany and Hungary, accusing them of blocking efforts to embargo energy sales, from which Russia stands to make up to £250bn (\$326bn) this year.\n"
-)
