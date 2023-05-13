@@ -21,7 +21,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.newsapp.R
 
-//Todo(extract all resource into values xml file)
 
 @Composable
 fun ProfileScreen(

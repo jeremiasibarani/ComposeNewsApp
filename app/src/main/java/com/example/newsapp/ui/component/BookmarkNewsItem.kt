@@ -1,10 +1,12 @@
 package com.example.newsapp.ui.component
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -26,8 +28,8 @@ import com.example.newsapp.ui.theme.NewsAppTheme
 @Composable
 fun BookmarkNews(
     modifier : Modifier = Modifier,
-    //Todo(decide whether or not to separate the type of this class, because this class will be the one retrieved from database and currently it's using the one from response)
-    news : BookmarkNewsEntity
+    news : BookmarkNewsEntity,
+    removedFromBookmarkAction : (news : BookmarkNewsEntity) -> Unit
 ) {
     Card(
         modifier = modifier
@@ -49,7 +51,6 @@ fun BookmarkNews(
                     .width(96.dp)
                     .height(126.dp)
                     .clip(RoundedCornerShape(6.dp)),
-                //Todo(placeholder image should be proper, currently it's using the dummy one)
                 placeholder = painterResource(id = R.drawable.news_placeholder),
                 contentScale = ContentScale.Crop
             )
@@ -62,10 +63,27 @@ fun BookmarkNews(
                 horizontalAlignment = Alignment.Start,
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                Text(
-                    text = news.country,
-                    style = MaterialTheme.typography.h6
-                )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ){
+                    Text(
+                        text = news.country,
+                        style = MaterialTheme.typography.h6,
+                        modifier = Modifier
+                            .weight(1f)
+                    )
+                    Icon(
+                        painter = painterResource(id = R.drawable.bookmark_icon_outlined),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(24.dp)
+                            .clickable {
+                                removedFromBookmarkAction(news)
+                            }
+                    )
+                }
+
 
                 Text(
                     text = news.title,
@@ -79,7 +97,6 @@ fun BookmarkNews(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Image(
-                        //Todo(Icon of source of news still using the dummy drawable resource, change it to more general icon)
                         painter = painterResource(id = R.drawable.sample_news_img),
                         contentDescription = null,
                         contentScale = ContentScale.Crop,
@@ -125,7 +142,8 @@ fun BookmarkNewsPrev() {
                 source = "BBC News",
                 publishedDate = "4 days ago",
                 imgUrl = "https://upload.wikimedia.org/wikipedia/commons/9/96/INS_Kamorta_during_trials_at_sea.jpg"
-            )
+            ),
+            removedFromBookmarkAction = {}
         )
     }
 }

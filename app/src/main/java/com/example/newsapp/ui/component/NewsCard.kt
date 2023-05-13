@@ -23,6 +23,8 @@ import com.example.newsapp.model.database.NewsEntity
 import com.example.newsapp.model.network.News
 import com.example.newsapp.ui.theme.NewsAppTheme
 
+
+// Todo(the padding of the text content to the side of the card is currently too closed)
 @Composable
 fun NewsCard(
     modifier : Modifier = Modifier,
@@ -34,13 +36,12 @@ fun NewsCard(
         .wrapContentHeight()
         .padding(bottom = 10.dp),
         shape = RoundedCornerShape(topStart = 6.dp, topEnd = 6.dp),
-        elevation = 2.dp
+        elevation = 1.dp
     ) {
         Column{
             AsyncImage(
                 model = news.imgUrl,
                 contentDescription = null,
-                //Todo(placeholder image should be proper, currently it's using the dummy one)
                 placeholder = painterResource(id = R.drawable.news_placeholder),
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
@@ -71,7 +72,6 @@ fun NewsCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Image(
-                    //Todo(Icon of source of news still using the dummy drawable resource, change it to more general icon)
                     painter = painterResource(id = R.drawable.sample_news_img),
                     contentDescription = null,
                     contentScale = ContentScale.Crop,

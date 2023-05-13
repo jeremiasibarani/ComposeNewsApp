@@ -56,33 +56,6 @@ fun HomeScreen(
             data = news,
             navigateToDetailScreen = navigateToDetailScreen
         )
-
-//        viewModel.uiState.collectAsState(initial = UiState.Loading).value.let{uiState ->
-//            when(uiState){
-//                is UiState.Loading -> {
-//                    Box(
-//                        modifier = Modifier
-//                            .fillMaxWidth()
-//                            .weight(1f)
-//                    ){
-//                        CircularProgressIndicator(
-//                            modifier = Modifier
-//                                .align(Alignment.Center)
-//                        )
-//                    }
-//
-//                }
-//                is UiState.Error -> {
-//                    Toast.makeText(context, uiState.errorMessage, Toast.LENGTH_SHORT).show()
-//                }
-//                is UiState.Success -> {
-//                    NewsList(
-//                        modifier = modifier,
-//                        data = news
-//                    )
-//                }
-//            }
-//        }
     }
 
 }

@@ -6,7 +6,9 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -35,6 +37,8 @@ import com.example.newsapp.ViewModelFactory
 import com.example.newsapp.di.Injector
 import com.example.newsapp.model.database.NewsEntity
 
+//Todo(the padding of the text content is too closed to the side of the card, can't scroll the column to read the rest of the content, use rememberscrollable)
+
 @Composable
 fun DetailScreen(
     modifier : Modifier = Modifier,
@@ -53,6 +57,8 @@ fun DetailScreen(
 
     Column(
         modifier = modifier
+            .padding(top = 20.dp, start = 15.dp, end = 15.dp)
+            .fillMaxSize()
     ) {
         DetailNews(
             modifier = Modifier
@@ -65,6 +71,7 @@ fun DetailScreen(
         )
         BottomBarAction(
             modifier = Modifier
+                .padding(vertical = 20.dp)
                 .wrapContentHeight()
         )
         BackHandler(
@@ -75,7 +82,8 @@ fun DetailScreen(
 }
 
 
-// Todo(resolve this erro : Parameter specified as non-null is null: method com.example.newsapp.ui.screen.DetailScreenKt.DetailNews, parameter news)
+
+
 @Composable
 fun DetailNews(
     modifier: Modifier = Modifier,
@@ -84,6 +92,7 @@ fun DetailNews(
 ) {
     Column(
         modifier = modifier
+            .verticalScroll(rememberScrollState())
     ) {
         Row(
             modifier = Modifier
@@ -117,7 +126,7 @@ fun DetailNews(
                 )
             }
             Icon(
-                painter = painterResource(id = R.drawable.bookmark_icon_filled),
+                painter = painterResource(id = R.drawable.bookmark_icon_outlined),
                 contentDescription = null,
                 modifier = Modifier
                     .size(24.dp)
@@ -211,10 +220,34 @@ fun BottomBarAction(
 @Composable
 fun DetailScreenPrev() {
     NewsAppTheme {
-//        DetailScreen(
-//            modifier = Modifier
-//                .fillMaxSize()
-//                .padding(15.dp)
-//        )
+        Column(
+            modifier = Modifier
+                .padding(top = 20.dp, start = 15.dp, end = 15.dp)
+                .fillMaxSize()
+        ) {
+            DetailNews(
+                modifier = Modifier
+                    .weight(1f),
+                news = detailNews,
+                onBookmarkClicked = {}
+            )
+            BottomBarAction(
+                modifier = Modifier
+                    .padding(vertical = 20.dp)
+                    .wrapContentHeight()
+            )
+        }
     }
 }
+
+private val detailNews = NewsEntity(
+    country = "Europe",
+    title = "Russian warship: Moskva sinks in Black Sea",
+    source = "BBC News",
+    publishedDate = "4 days ago",
+    description = "Russian warship: Moskva sinks in Black Sea Russian warship: Moskva sinks in Black Sea Russian warship: Moskva sinks in Black Sea",
+    content = "Russian warship: Moskva sinks in Black Sea Russian warship: Moskva sinks in Black Sea Russian warship: Moskva sinks in Black Sea Russian warship: Moskva sinks in Black Sea Russian warship: Moskva sinks in Black Sea" +
+             "Russian warship: Moskva sinks in Black Sea Russian warship: Moskva sinks in Black Sea Russian warship: Moskva sinks in Black Sea Russian warship: Moskva sinks in Black Sea Russian warship: Moskva sinks in Black Sea" +
+             "Russian warship: Moskva sinks in Black Sea Russian warship: Moskva sinks in Black Sea Russian warship: Moskva sinks in Black Sea Russian warship: Moskva sinks in Black Sea Russian warship: Moskva sinks in Black Sea" +
+            "Russian warship: Moskva sinks in Black Sea Russian warship: Moskva sinks in Black Sea Russian warship: Moskva sinks in Black Sea Russian warship: Moskva sinks in Black Sea Russian warship: Moskva sinks in Black Sea"
+)
