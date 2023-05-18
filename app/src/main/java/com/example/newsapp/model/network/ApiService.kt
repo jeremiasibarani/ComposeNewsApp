@@ -1,7 +1,6 @@
 package com.example.newsapp.model.network
 
 import com.example.newsapp.BuildConfig
-import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import retrofit2.Response
 import retrofit2.Retrofit

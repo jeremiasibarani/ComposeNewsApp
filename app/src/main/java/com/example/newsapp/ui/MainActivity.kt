@@ -1,4 +1,4 @@
-package com.example.newsapp
+package com.example.newsapp.ui
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -21,11 +21,13 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.newsapp.navigation.Screen
 import com.example.newsapp.ui.component.BottomBar
+import com.example.newsapp.ui.component.NewsWebView
 import com.example.newsapp.ui.screen.BookmarkScreen
 import com.example.newsapp.ui.screen.DetailScreen
 import com.example.newsapp.ui.screen.HomeScreen
 import com.example.newsapp.ui.screen.ProfileScreen
 import com.example.newsapp.ui.theme.NewsAppTheme
+import com.example.newsapp.util.Utils
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,7 +56,11 @@ fun NewsApp() {
     NewsAppTheme {
         Scaffold(
             bottomBar = {
-                if(currentRoute != Screen.DetailNews.route){
+                if(
+                    currentRoute == Screen.Home.route ||
+                    currentRoute == Screen.Bookmark.route ||
+                    currentRoute == Screen.Profile.route
+                ){
                     BottomBar(
                         navController = navController
                     )
@@ -102,8 +108,27 @@ fun NewsApp() {
                         },
                         modifier = Modifier
                             .padding(top = 20.dp, start = 15.dp, end = 15.dp)
-                            .fillMaxSize()
+                            .fillMaxSize(),
+                        navController = navController
                     )
+                }
+                composable(
+                    route = Screen.FurtherReadingNews.route,
+                    arguments = listOf(
+                        navArgument("newsUrl"){
+                            type = NavType.StringType
+                        }
+                    )
+                ){
+                    val encodedNewsUrl = it.arguments?.getString("newsUrl")
+                    if(encodedNewsUrl != null){
+                        val newsUrl = Utils.decodeStringUrl(encodedNewsUrl)
+                        NewsWebView(
+                            modifier = Modifier
+                                .fillMaxSize(),
+                            newsUrl = newsUrl
+                        )
+                    }
                 }
             }
         }

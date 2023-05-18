@@ -61,6 +61,9 @@ class NewsRepository(
     }
 
     fun getAllBookmarkedNews() = newsDatabase.bookmarkNewsDao().getAllBookmarkedNews()
-    suspend fun deleteFromBookmark(bookmarkedNews : BookmarkNewsEntity) = newsDatabase.bookmarkNewsDao().deleteBookmarkedNews(bookmarkedNews)
+    suspend fun deleteFromBookmark(newsTitle : String) = newsDatabase.bookmarkNewsDao().deleteBookmarkedNews(newsTitle)
     fun getDetailNewsById(id : Long) = newsDatabase.newsDao().getDetailNewsById(id).filterNotNull()
+    fun searchBookmarkedNews(newsTitle : String) = newsDatabase.bookmarkNewsDao().searchBookmarkedNews(newsTitle)
+
+    fun checkIfNewsExistsInBookmark(newsTitle : String) = newsDatabase.bookmarkNewsDao().checkIfNewsExists(newsTitle)
 }

@@ -1,26 +1,31 @@
 package com.example.newsapp.ui.screen
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.newsapp.BookmarkNewsViewModel
-import com.example.newsapp.ViewModelFactory
+import com.example.newsapp.R
 import com.example.newsapp.di.Injector
 import com.example.newsapp.model.database.BookmarkNewsEntity
 import com.example.newsapp.ui.component.BookmarkNews
+import com.example.newsapp.ui.component.DataNotFound
+import com.example.newsapp.ui.component.SearchBar
 import com.example.newsapp.ui.theme.NewsAppTheme
+import com.example.newsapp.ui.viewmodel.BookmarkNewsViewModel
+import com.example.newsapp.ui.viewmodel.ViewModelFactory
 
 @Composable
 fun BookmarkScreen(
@@ -30,23 +35,44 @@ fun BookmarkScreen(
     )
 ) {
 
-    val bookmarkedNews by viewModel.getAllBookmarkedNews().collectAsStateWithLifecycle(initialValue = emptyList())
+    val bookmarkedNews by viewModel.bookmarkedNews.collectAsState()
 
-    BookmarkList(
+    Column(
         modifier = modifier
-            .fillMaxSize(),
-        data = bookmarkedNews,
-        removedFromBookmarkAction = { bookmarkNews ->
-            viewModel.deleteFromBookmark(bookmarkNews)
+    ) {
+        SearchBar(
+            placeHolderText = stringResource(id = R.string.search_placeholder),
+            iconLeading = R.drawable.search_icon,
+            onSearchClicked = {newsTitle ->
+                viewModel.searchBookmarkedNews(newsTitle)
+            },
+            onClearSearchClicked = {
+                viewModel.getAllBookmarkedNews()
+            }
+        )
+        if(bookmarkedNews.isNotEmpty()){
+            BookmarkList(
+                modifier = Modifier
+                    .fillMaxSize(),
+                data = bookmarkedNews,
+                removedFromBookmarkAction = { newsTitle ->
+                    viewModel.deleteFromBookmark(newsTitle)
+                }
+            )
+        }else{
+            DataNotFound(
+                modifier = Modifier.fillMaxSize(),
+                text = stringResource(id = R.string.no_data_found)
+            )
         }
-    )
+    }
 }
 
 @Composable
 fun BookmarkList(
     modifier: Modifier = Modifier,
     data : List<BookmarkNewsEntity>,
-    removedFromBookmarkAction : (news : BookmarkNewsEntity) -> Unit
+    removedFromBookmarkAction : (newsTitle : String) -> Unit
 ) {
     Box(
         modifier = modifier,

@@ -1,31 +1,33 @@
 package com.example.newsapp.ui.screen
 
-import android.widget.Toast
+import android.util.Log
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.newsapp.NewsViewModel
-import com.example.newsapp.model.network.News
-import com.example.newsapp.ui.component.NewsCard
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemsIndexed
+import com.example.newsapp.ui.viewmodel.NewsViewModel
 import com.example.newsapp.R
-import com.example.newsapp.ViewModelFactory
+import com.example.newsapp.ui.viewmodel.ViewModelFactory
 import com.example.newsapp.di.Injector
 import com.example.newsapp.model.database.NewsEntity
-import com.example.newsapp.ui.common.UiState
+import com.example.newsapp.ui.component.DataNotFound
+import com.example.newsapp.ui.component.NewsCard
+import com.example.newsapp.ui.component.ProgressBar
 import com.example.newsapp.ui.component.SearchBar
 import com.example.newsapp.ui.theme.NewsAppTheme
 
@@ -37,25 +39,32 @@ fun HomeScreen(
     ),
     navigateToDetailScreen : (newsId : Long) -> Unit
 ){
-    val context = LocalContext.current
-    //Todo(handle loading and error state of the call)
+
+    val news = viewModel.requestNews.collectAsLazyPagingItems()
     Column(
         modifier = modifier
     ){
         SearchBar(
-            placeHolderText = "Search news",
+            placeHolderText = stringResource(id = R.string.search_placeholder),
             iconLeading = R.drawable.search_icon,
             onSearchClicked = {query ->
                 viewModel.getNews(query)
             }
         )
 
-        val news = viewModel.getNews().collectAsLazyPagingItems()
-        NewsList(
-            modifier = modifier,
-            data = news,
-            navigateToDetailScreen = navigateToDetailScreen
-        )
+        if(news.itemCount > 0 || news.loadState.refresh is LoadState.Loading){
+            NewsList(
+                modifier = Modifier
+                    .fillMaxSize(),
+                data = news,
+                navigateToDetailScreen = navigateToDetailScreen
+            )
+        }else{
+            DataNotFound(
+                text = stringResource(id = R.string.no_data_found),
+                modifier = Modifier.fillMaxSize()
+            )
+        }
     }
 
 }
@@ -66,24 +75,44 @@ fun NewsList(
     data : LazyPagingItems<NewsEntity>,
     navigateToDetailScreen : (newsId : Long) -> Unit
 ) {
-    LazyColumn(
-        contentPadding = PaddingValues(10.dp),
-        modifier = modifier
+    Box(
+        modifier = modifier,
+        contentAlignment = Alignment.Center
     ){
-        itemsIndexed(data){_, news ->
-            news?.let{
-                NewsCard(
-                    modifier = Modifier
-                        .padding(10.dp)
-                        .clickable {
-                           navigateToDetailScreen(news.id)
-                        },
-                    news = it
-                )
+        LazyColumn(
+            contentPadding = PaddingValues(10.dp),
+            modifier = Modifier
+        ){
+            itemsIndexed(data){_, news ->
+                Log.i("HomeScreen-TAG", "$news")
+                news?.let{
+                    NewsCard(
+                        modifier = Modifier
+                            .padding(10.dp)
+                            .clickable {
+                                navigateToDetailScreen(news.id)
+                            },
+                        news = it
+                    )
+                }
             }
         }
+        if(
+            data.loadState.refresh is LoadState.Loading ||
+            data.loadState.append is LoadState.Loading ||
+            data.loadState.prepend is LoadState.Loading
+        ){
+            ProgressBar(
+                modifier = Modifier
+                    .fillMaxSize()
+            )
+        }
     }
+
+
 }
+
+
 
 @Preview(showBackground = true)
 @Composable

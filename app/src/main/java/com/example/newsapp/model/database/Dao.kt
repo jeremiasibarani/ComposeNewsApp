@@ -12,8 +12,14 @@ interface BookmarkNewsDao{
     @Query("SELECT * FROM bookmarked_news")
     fun getAllBookmarkedNews() : Flow<List<BookmarkNewsEntity>>
 
-    @Delete
-    suspend fun deleteBookmarkedNews(bookmarkNews: BookmarkNewsEntity)
+    @Query("SELECT * FROM bookmarked_news WHERE title LIKE '%' || :newsTitle || '%'")
+    fun searchBookmarkedNews(newsTitle : String) : Flow<List<BookmarkNewsEntity>>
+
+    @Query("SELECT EXISTS(SELECT 1 FROM bookmarked_news WHERE title= :newsTitle)")
+    fun checkIfNewsExists(newsTitle: String) : Flow<Boolean>
+
+    @Query("DELETE FROM bookmarked_news WHERE title =:newsTitle")
+    suspend fun deleteBookmarkedNews(newsTitle: String)
 }
 
 @Dao

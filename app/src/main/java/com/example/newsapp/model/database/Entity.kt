@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "bookmarked_news")
 data class BookmarkNewsEntity(
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey
     val id : Long = 0L,
     val title : String = "",
     val author : String = "",

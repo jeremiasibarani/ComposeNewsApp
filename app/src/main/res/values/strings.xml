@@ -8,4 +8,7 @@
     <string name="menu_home">Home</string>
     <string name="menu_bookmark">Bookmark</string>
     <string name="menu_profile">Profile</string>
+    <string name="search_placeholder">Search news</string>
+    <string name="no_data_found">No data found</string>
+    <string name="read_origin">Read origin</string>
 </resources>

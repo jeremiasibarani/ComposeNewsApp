@@ -1,4 +1,4 @@
-package com.example.newsapp
+package com.example.newsapp.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -25,7 +25,7 @@ class ViewModelFactory private constructor(
 
         fun getInstance(
             newsRepository : NewsRepository
-        ) : ViewModelFactory{
+        ) : ViewModelFactory {
             if(INSTANCE == null){
                 INSTANCE = ViewModelFactory(newsRepository)
             }

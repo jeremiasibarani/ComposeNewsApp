@@ -1,4 +1,4 @@
-package com.example.newsapp
+package com.example.newsapp.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -15,5 +15,11 @@ class NewsDetailViewModel(
     fun bookmarkNews(news : NewsEntity) = viewModelScope.launch {
         newsRepository.bookmarkNews(news)
     }
+
+    fun deleteNewsFromBookmark(newsTitle : String) = viewModelScope.launch {
+        newsRepository.deleteFromBookmark(newsTitle)
+    }
+
+    fun checkIfNewsExistsInBookmark(newsTitle : String) = newsRepository.checkIfNewsExistsInBookmark(newsTitle)
 
 }

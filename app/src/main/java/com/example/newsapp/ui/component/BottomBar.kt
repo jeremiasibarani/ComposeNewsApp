@@ -5,12 +5,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import com.example.newsapp.navigation.NavigationItem
 import com.example.newsapp.R
 import com.example.newsapp.navigation.Screen
@@ -38,6 +41,9 @@ fun BottomBar(
             screen = Screen.Profile
         ),
     )
+
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
     
     BottomNavigation(
         modifier = modifier
@@ -54,7 +60,7 @@ fun BottomBar(
                         text = item.title
                     )
                 },
-                selected = true,
+                selected = currentRoute == item.screen.route,
                 onClick = {
                     navController.navigate(item.screen.route){
                         popUpTo(navController.graph.findStartDestination().id){
@@ -73,6 +79,6 @@ fun BottomBar(
 @Composable
 fun BottomBarPrev() {
     NewsAppTheme {
-
+        BottomBar(navController = rememberNavController())
     }
 }

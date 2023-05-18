@@ -1,11 +1,21 @@
 package com.example.newsapp.ui.screen
 
+import android.content.Context
+import android.content.Intent
 import android.util.Log
-import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
@@ -14,6 +24,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,21 +32,22 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil.compose.AsyncImage
-import com.example.newsapp.NewsDetailViewModel
-import com.example.newsapp.model.network.News
-import com.example.newsapp.R
-import com.example.newsapp.ui.theme.NewsAppTheme
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.newsapp.ViewModelFactory
+import androidx.navigation.NavHostController
+import coil.compose.AsyncImage
+import com.example.newsapp.R
 import com.example.newsapp.di.Injector
 import com.example.newsapp.model.database.NewsEntity
+import com.example.newsapp.navigation.Screen
+import com.example.newsapp.ui.component.ProgressBar
+import com.example.newsapp.ui.viewmodel.NewsDetailViewModel
+import com.example.newsapp.ui.viewmodel.ViewModelFactory
 
 //Todo(the padding of the text content is too closed to the side of the card, can't scroll the column to read the rest of the content, use rememberscrollable)
 
@@ -46,50 +58,91 @@ fun DetailScreen(
     viewModel : NewsDetailViewModel = viewModel(
         factory = ViewModelFactory.getInstance(Injector.provideNewsRepository(LocalContext.current))
     ),
+    navController: NavHostController,
     onBackPressed : () -> Unit
 ) {
 
     val detailNews by viewModel.getDetailNewsById(newsId).collectAsStateWithLifecycle(initialValue = NewsEntity())
 
-    val context = LocalContext.current
-
     Log.i("DETAILSCREEN-TAG", "$detailNews")
 
-    Column(
-        modifier = modifier
-            .padding(top = 20.dp, start = 15.dp, end = 15.dp)
-            .fillMaxSize()
-    ) {
+    if(detailNews.id != 0L){
+        val isNewsBookmarked by viewModel.checkIfNewsExistsInBookmark(detailNews.title).collectAsState(initial = false)
+        Log.i("DETAILSCREEN-TAG", "status bookmark : $isNewsBookmarked")
         DetailNews(
-            modifier = Modifier
-                .weight(1f),
+            modifier = modifier,
+            navController = navController,
+            onBackPressed = onBackPressed,
+            viewModel = viewModel,
             news = detailNews,
-            onBookmarkClicked = {news ->
-                viewModel.bookmarkNews(news)
-                Toast.makeText(context, "Bookmarked", Toast.LENGTH_SHORT).show()
-            }
+            isNewsBookmarked = isNewsBookmarked
         )
-        BottomBarAction(
-            modifier = Modifier
-                .padding(vertical = 20.dp)
-                .wrapContentHeight()
-        )
-        BackHandler(
-            enabled = true,
-            onBack = onBackPressed
-        )
+    }else{
+        ProgressBar(modifier = Modifier.fillMaxSize())
     }
+
 }
-
-
 
 
 @Composable
 fun DetailNews(
     modifier: Modifier = Modifier,
+    navController: NavHostController,
+    onBackPressed : () -> Unit,
+    viewModel: NewsDetailViewModel,
     news : NewsEntity,
-    onBookmarkClicked : (news : NewsEntity) -> Unit
+    isNewsBookmarked : Boolean
 ) {
+    val context = LocalContext.current
+    Column(
+        modifier = modifier
+            .padding(top = 20.dp, start = 15.dp, end = 15.dp)
+            .fillMaxSize()
+    ) {
+        DetailNewsPage(
+            modifier = Modifier
+                .weight(1f),
+            news = news,
+            onBookmarkClicked = {news, isBookmark ->
+                if(isBookmark){
+                    viewModel.deleteNewsFromBookmark(news.title)
+                }else{
+                    viewModel.bookmarkNews(news)
+                }
+            },
+            isNewsBookmarked = isNewsBookmarked
+        )
+        BottomBarAction(
+            modifier = Modifier
+                .padding(vertical = 20.dp)
+                .wrapContentHeight(),
+            onClickReadOriginButton = {
+                navController.navigate(
+                    Screen.FurtherReadingNews.createRoute(news.furtherReadingLink)
+                )
+            },
+            onShareClicked = {
+                shareNews(context, news.title, news.description)
+            }
+        )
+
+        BackHandler(
+            enabled = true,
+            onBack = onBackPressed
+        )
+    }
+
+}
+
+
+@Composable
+fun DetailNewsPage(
+    modifier: Modifier = Modifier,
+    news : NewsEntity,
+    onBookmarkClicked : (news : NewsEntity, bookmarkStatus : Boolean) -> Unit,
+    isNewsBookmarked: Boolean
+) {
+    Log.i("DETAILSCREEN-TAG", "status bookmark-lowest : $isNewsBookmarked")
     Column(
         modifier = modifier
             .verticalScroll(rememberScrollState())
@@ -126,13 +179,16 @@ fun DetailNews(
                 )
             }
             Icon(
-                painter = painterResource(id = R.drawable.bookmark_icon_outlined),
+                painter = painterResource(
+                    id = if(isNewsBookmarked) R.drawable.bookmark_icon_filled else R.drawable.ic_bookmark_outlined
+                ),
                 contentDescription = null,
                 modifier = Modifier
                     .size(24.dp)
                     .clickable {
-                        onBookmarkClicked(news)
-                    }
+                        onBookmarkClicked(news, isNewsBookmarked)
+                    },
+                tint = MaterialTheme.colors.primary
             )
         }
 
@@ -198,7 +254,7 @@ fun BottomBarAction(
                 onClick = onClickReadOriginButton,
             ) {
                 Text(
-                    text = "Read Origin",
+                    text = stringResource(id = R.string.read_origin),
                     style = MaterialTheme.typography.h5.copy(
                         fontWeight = FontWeight.SemiBold,
                         fontSize = 15.sp
@@ -216,38 +272,18 @@ fun BottomBarAction(
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun DetailScreenPrev() {
-    NewsAppTheme {
-        Column(
-            modifier = Modifier
-                .padding(top = 20.dp, start = 15.dp, end = 15.dp)
-                .fillMaxSize()
-        ) {
-            DetailNews(
-                modifier = Modifier
-                    .weight(1f),
-                news = detailNews,
-                onBookmarkClicked = {}
-            )
-            BottomBarAction(
-                modifier = Modifier
-                    .padding(vertical = 20.dp)
-                    .wrapContentHeight()
-            )
-        }
+private fun shareNews(context : Context, title : String, desc : String){
+    val intent = Intent(Intent.ACTION_SEND).apply {
+        type = "text/plain"
+        putExtra(Intent.EXTRA_SUBJECT, title)
+        putExtra(Intent.EXTRA_TEXT, desc)
     }
+
+    context.startActivity(
+        Intent.createChooser(
+            intent,
+            "news"
+        )
+    )
 }
 
-private val detailNews = NewsEntity(
-    country = "Europe",
-    title = "Russian warship: Moskva sinks in Black Sea",
-    source = "BBC News",
-    publishedDate = "4 days ago",
-    description = "Russian warship: Moskva sinks in Black Sea Russian warship: Moskva sinks in Black Sea Russian warship: Moskva sinks in Black Sea",
-    content = "Russian warship: Moskva sinks in Black Sea Russian warship: Moskva sinks in Black Sea Russian warship: Moskva sinks in Black Sea Russian warship: Moskva sinks in Black Sea Russian warship: Moskva sinks in Black Sea" +
-             "Russian warship: Moskva sinks in Black Sea Russian warship: Moskva sinks in Black Sea Russian warship: Moskva sinks in Black Sea Russian warship: Moskva sinks in Black Sea Russian warship: Moskva sinks in Black Sea" +
-             "Russian warship: Moskva sinks in Black Sea Russian warship: Moskva sinks in Black Sea Russian warship: Moskva sinks in Black Sea Russian warship: Moskva sinks in Black Sea Russian warship: Moskva sinks in Black Sea" +
-            "Russian warship: Moskva sinks in Black Sea Russian warship: Moskva sinks in Black Sea Russian warship: Moskva sinks in Black Sea Russian warship: Moskva sinks in Black Sea Russian warship: Moskva sinks in Black Sea"
-)

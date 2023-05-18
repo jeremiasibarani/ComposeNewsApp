@@ -48,7 +48,16 @@ class NewsRemoteMediator(
             query[PAGE_REQUEST] = page
             query[PAGE_SIZE_REQUEST] = state.config.pageSize
             val response = newsApiService.getNews(query)
+
+            if(!response.isSuccessful){
+                Log.e("NewsRemoteMediator-TAG", "error : ${response.raw()}")
+                Log.e("NewsRemoteMediator-TAG", "error : ${response.errorBody()}")
+            }
+
             val responseBody = response.body()
+
+            Log.e("NewsRemoteMediator-TAG", "${response.raw()}")
+            Log.e("NewsRemoteMediator-TAG", "$responseBody")
             Log.i("REMOTEMEDIATOR-TAG", "${response.raw()}")
             val articles = responseBody?.articles
             val endOfPaginationReached = articles.isNullOrEmpty()

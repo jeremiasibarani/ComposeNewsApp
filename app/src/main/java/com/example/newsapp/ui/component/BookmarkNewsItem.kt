@@ -2,7 +2,18 @@ package com.example.newsapp.ui.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
@@ -21,15 +32,13 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.newsapp.R
 import com.example.newsapp.model.database.BookmarkNewsEntity
-import com.example.newsapp.model.database.NewsEntity
-import com.example.newsapp.model.network.News
 import com.example.newsapp.ui.theme.NewsAppTheme
 
 @Composable
 fun BookmarkNews(
     modifier : Modifier = Modifier,
     news : BookmarkNewsEntity,
-    removedFromBookmarkAction : (news : BookmarkNewsEntity) -> Unit
+    removedFromBookmarkAction : (newsTitle : String) -> Unit
 ) {
     Card(
         modifier = modifier
@@ -41,7 +50,7 @@ fun BookmarkNews(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .wrapContentHeight(),
+                .height(IntrinsicSize.Max),
             horizontalArrangement = Arrangement.Center
         ) {
             AsyncImage(
@@ -49,8 +58,8 @@ fun BookmarkNews(
                 contentDescription = null,
                 modifier = Modifier
                     .width(96.dp)
-                    .height(126.dp)
-                    .clip(RoundedCornerShape(6.dp)),
+                    .fillMaxHeight()
+                    .clip(RoundedCornerShape(topStart = 6.dp, bottomStart = 6.dp)),
                 placeholder = painterResource(id = R.drawable.news_placeholder),
                 contentScale = ContentScale.Crop
             )
@@ -74,12 +83,12 @@ fun BookmarkNews(
                             .weight(1f)
                     )
                     Icon(
-                        painter = painterResource(id = R.drawable.bookmark_icon_outlined),
+                        painter = painterResource(id = R.drawable.ic_bookmark_filled),
                         contentDescription = null,
                         modifier = Modifier
                             .size(24.dp)
                             .clickable {
-                                removedFromBookmarkAction(news)
+                                removedFromBookmarkAction(news.title)
                             }
                     )
                 }
@@ -138,7 +147,7 @@ fun BookmarkNewsPrev() {
         BookmarkNews(
             news = BookmarkNewsEntity(
                 country = "Europe",
-                title = "Russian warship: Moskva sinks in Black Sea",
+                title = "Russian warship: Moskva sinks in Black Sasdasdasdadasdasdasdadwqwdqwdqwea",
                 source = "BBC News",
                 publishedDate = "4 days ago",
                 imgUrl = "https://upload.wikimedia.org/wikipedia/commons/9/96/INS_Kamorta_during_trials_at_sea.jpg"

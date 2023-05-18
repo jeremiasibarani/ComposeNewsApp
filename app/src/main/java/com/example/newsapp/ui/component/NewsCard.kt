@@ -1,7 +1,16 @@
 package com.example.newsapp.ui.component
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
@@ -20,7 +29,6 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.newsapp.R
 import com.example.newsapp.model.database.NewsEntity
-import com.example.newsapp.model.network.News
 import com.example.newsapp.ui.theme.NewsAppTheme
 
 
@@ -53,21 +61,21 @@ fun NewsCard(
             )
             Text(
                 modifier = Modifier
-                    .padding(bottom = 5.dp),
+                    .padding(bottom = 5.dp, start = 7.dp),
                 text = news.country,
                 style = MaterialTheme.typography.h6
             )
 
             Text(
                 modifier = Modifier
-                    .padding(bottom = 5.dp),
+                    .padding(bottom = 5.dp, start = 7.dp),
                 text = news.title,
                 style = MaterialTheme.typography.h5
             )
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 10.dp),
+                    .padding(bottom = 10.dp, start = 7.dp),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
