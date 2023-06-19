@@ -25,23 +25,24 @@ class NewsRepository(
         keyword : String,
         pageSize : Int = DEFAULT_PAGE_SIZE_REQUEST
     ) : Flow<PagingData<NewsEntity>> {
-        val query = mutableMapOf<String, Any>(
-            KEYWORD_REQUEST to keyword,
-            API_KEY_REQUEST to BuildConfig.API_KEY
-        )
-        return Pager(
-            config = PagingConfig(
-                pageSize = pageSize
-            ),
-            remoteMediator = NewsRemoteMediator(
-                database = newsDatabase,
-                newsApiService = newsApiService,
-                query = query
-            ),
-            pagingSourceFactory = {
-                newsDatabase.newsDao().getAllNews()
-            }
-        ).flow
+            val query = mutableMapOf<String, Any>(
+                KEYWORD_REQUEST to keyword,
+                API_KEY_REQUEST to BuildConfig.API_KEY
+            )
+            return Pager(
+                config = PagingConfig(
+                    pageSize = pageSize
+                ),
+                remoteMediator = NewsRemoteMediator(
+                    database = newsDatabase,
+                    newsApiService = newsApiService,
+                    query = query
+                ),
+                pagingSourceFactory = {
+                    newsDatabase.newsDao().getAllNews()
+                }
+            ).flow
+
     }
 
     suspend fun bookmarkNews(news : NewsEntity){

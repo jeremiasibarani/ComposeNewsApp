@@ -32,7 +32,7 @@ import com.example.newsapp.model.database.NewsEntity
 import com.example.newsapp.ui.theme.NewsAppTheme
 
 
-// Todo(the padding of the text content to the side of the card is currently too closed)
+
 @Composable
 fun NewsCard(
     modifier : Modifier = Modifier,

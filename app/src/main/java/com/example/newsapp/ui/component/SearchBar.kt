@@ -26,6 +26,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -33,6 +34,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.newsapp.R
+import com.example.newsapp.util.Constants.SEARCH_BAR_TEST_TAG
 
 @Composable
 fun SearchBar(
@@ -82,7 +84,7 @@ fun SearchBar(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Clear,
-                        contentDescription = null
+                        contentDescription = stringResource(id = R.string.clear_search_bar)
                     )
                 }
             }
@@ -105,6 +107,7 @@ fun SearchBar(
             .heightIn(40.dp)
             .clip(RoundedCornerShape(10.dp))
             .border(width = 1.dp, color = Color.DarkGray, shape = RoundedCornerShape(10.dp))
+            .testTag(SEARCH_BAR_TEST_TAG)
     )
 }
 

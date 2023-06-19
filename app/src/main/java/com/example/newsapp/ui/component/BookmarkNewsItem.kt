@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -84,7 +85,7 @@ fun BookmarkNews(
                     )
                     Icon(
                         painter = painterResource(id = R.drawable.ic_bookmark_filled),
-                        contentDescription = null,
+                        contentDescription = stringResource(id = R.string.bookmark_icon_content_description),
                         modifier = Modifier
                             .size(24.dp)
                             .clickable {

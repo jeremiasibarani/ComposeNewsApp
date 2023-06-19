@@ -11,4 +11,7 @@
     <string name="search_placeholder">Search news</string>
     <string name="no_data_found">No data found</string>
     <string name="read_origin">Read origin</string>
+    <string name="bookmark_icon_content_description">Bookmark</string>
+    <string name="clear_search_bar">Clear search</string>
+    <string name="profile_icon_content_description">About page</string>
 </resources>

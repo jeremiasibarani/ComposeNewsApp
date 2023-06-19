@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -30,6 +31,7 @@ import com.example.newsapp.ui.component.NewsCard
 import com.example.newsapp.ui.component.ProgressBar
 import com.example.newsapp.ui.component.SearchBar
 import com.example.newsapp.ui.theme.NewsAppTheme
+import com.example.newsapp.util.Constants.HOME_LAZY_COLUMN_TEST_TAG
 
 @Composable
 fun HomeScreen(
@@ -62,7 +64,8 @@ fun HomeScreen(
         }else{
             DataNotFound(
                 text = stringResource(id = R.string.no_data_found),
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier
+                    .fillMaxSize()
             )
         }
     }
@@ -82,6 +85,7 @@ fun NewsList(
         LazyColumn(
             contentPadding = PaddingValues(10.dp),
             modifier = Modifier
+                .testTag(HOME_LAZY_COLUMN_TEST_TAG)
         ){
             itemsIndexed(data){_, news ->
                 Log.i("HomeScreen-TAG", "$news")

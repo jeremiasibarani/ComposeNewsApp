@@ -31,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -48,8 +49,8 @@ import com.example.newsapp.navigation.Screen
 import com.example.newsapp.ui.component.ProgressBar
 import com.example.newsapp.ui.viewmodel.NewsDetailViewModel
 import com.example.newsapp.ui.viewmodel.ViewModelFactory
+import com.example.newsapp.util.Constants.DETAIL_NEWS_BUTTON_READ_ORIGIN_TEST_TAG
 
-//Todo(the padding of the text content is too closed to the side of the card, can't scroll the column to read the rest of the content, use rememberscrollable)
 
 @Composable
 fun DetailScreen(
@@ -182,7 +183,7 @@ fun DetailNewsPage(
                 painter = painterResource(
                     id = if(isNewsBookmarked) R.drawable.bookmark_icon_filled else R.drawable.ic_bookmark_outlined
                 ),
-                contentDescription = null,
+                contentDescription = stringResource(id = R.string.bookmark_icon_content_description),
                 modifier = Modifier
                     .size(24.dp)
                     .clickable {
@@ -252,6 +253,8 @@ fun BottomBarAction(
         Box(modifier = Modifier.weight(1f)){
             Button(
                 onClick = onClickReadOriginButton,
+                modifier = Modifier
+                    .testTag(DETAIL_NEWS_BUTTON_READ_ORIGIN_TEST_TAG)
             ) {
                 Text(
                     text = stringResource(id = R.string.read_origin),
